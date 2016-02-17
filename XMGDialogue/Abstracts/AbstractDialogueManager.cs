@@ -1,5 +1,4 @@
-﻿using MiniJSON;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -32,9 +31,9 @@ public abstract class AbstractDialogueManager : MonoBehaviour {
 	/// <summary>
 	/// Find the conversation with the correct name and create a Dialogue Controller to manage that conversation.
 	/// </summary>
-	/// <param name="jsonConversation">The data of the conversation to start.</param>
+	/// <param name="serializedConversation">The data of the conversation to start.</param>
 	/// <param name="context">The dialogue context to attatch to the controller.</param>
-	public abstract DialogueController StartConversation(TextAsset jsonConversation, AbstractDialogueContext context);
+	public abstract DialogueController StartConversation(TextAsset serializedConversation, AbstractDialogueContext context);
 
 	#endregion
 }
