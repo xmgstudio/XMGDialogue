@@ -4,6 +4,8 @@ Dialogue system developed by XMG Studio.
 
 If you use this drop us a line or make a pull request adding your game to the list at the bottom of this readme.
 
+There is a tutorial for setting up and writing for this system [here](http://xmgstudio.tumblr.com/)
+
 ##Quickstart
 
 Uses json files created the Yarn dialogue editor found [here](https://github.com/InfiniteAmmoInc/Yarn).
