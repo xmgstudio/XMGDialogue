@@ -12,6 +12,8 @@ Tutorial for this system is [here](http://xmgstudio.tumblr.com/).
 
 ##Games using this Dialogue System
 
+### Gastrobots by XMG Studio
 [![Gastrobots](http://i.imgur.com/90TM2r7.png)](gastrobots.xmg.com)
 
+### Project Giants by XMG Studio
 [![Giants](https://i.imgur.com/9BegGQL.png)](giants.xmg.com)
