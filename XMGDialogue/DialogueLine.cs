@@ -26,9 +26,9 @@ public class DialogueLine {
 	private const string OPTIONS_TAG = "options";
 
 	/// <summary>
-	/// Tag for action data. Writen like action([action|optionalEventTag]) or [action].
+	/// Tag for action data. Written like actions([action|optionalEventTag]) or [action].
 	/// </summary>
-	private const string ACTION_TAG = "action";
+	private const string ACTION_TAG = "actions";
 
 	/// <summary>
 	/// This is the character we use to split options and actions up between their components.
@@ -62,6 +62,7 @@ public class DialogueLine {
 	/// <summary>
 	/// The text id of the speaker of this line.
 	/// </summary>
+	[System.Obsolete("The use of the speaker name has been obsoleted, use the SpeakerID to lookup a name to display from your own data.")]
 	public string SpeakerName {
 		get;
 		private set;
@@ -113,6 +114,7 @@ public class DialogueLine {
 	/// <summary>
 	/// Gets the emotion associated with this dialogue Line.
 	/// </summary>
+	[System.Obsolete("Directly accessing the emotion on a DialogueLine is obsolete, use a line Action instead.")]
 	public string Emotion {
 		get;
 		private set;
