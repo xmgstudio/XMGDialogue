@@ -91,13 +91,9 @@ public class ConversationNode {
 	/// </summary>
 	/// <param name="parsedData">Parsed data.</param>
 	public ConversationNode(Dictionary<string, object> parsedData) {
-		this.Title = (parsedData.ContainsKey(YARN_TITLE_TAG)) ? parsedData[YARN_TITLE_TAG] as string : string.Empty;
-
-		string tagsBodyString = (parsedData.ContainsKey(YARN_TAGS_TAG)) ? parsedData[YARN_TAGS_TAG] as string : string.Empty;
-		this.ParseTags(tagsBodyString);
-
-		string scriptBodyString = (parsedData.ContainsKey(YARN_BODY_TAG)) ? parsedData[YARN_BODY_TAG] as string : string.Empty;
-		this.ParseScript(scriptBodyString);
+		this.Title = this.GetStringForKey(parsedData, YARN_TITLE_TAG);
+		this.ParseTags(this.GetStringForKey(parsedData, YARN_TAGS_TAG));
+		this.ParseScript(this.GetStringForKey(parsedData, YARN_BODY_TAG));
 
 		// Set this conversation to it's default state.
 		this.ResetConversation();
@@ -204,6 +200,24 @@ public class ConversationNode {
 		} else {
 			Debug.LogError(string.Format("No tag key matching {0} found in conversation node {1}", tag, this.Title));
 			return new string[0];
+		}
+	}
+
+	#endregion
+
+	#region Helpers
+
+	/// <summary>
+	/// Gets a string from a dictionary by key. If the dictionary does not contain that key return an empty string.
+	/// </summary>
+	/// <returns>The string for the given key or null.</returns>
+	/// <param name="dict">Dictionary to search.</param>
+	/// <param name="key">Key to find.</param>
+	private string GetStringForKey(Dictionary<string, object> dict, string key) {
+		if (dict.ContainsKey(key)) {
+			return dict[key] as string;
+		} else {
+			return string.Empty;
 		}
 	}
 
