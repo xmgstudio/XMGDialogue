@@ -87,13 +87,17 @@ public class ConversationNode {
 	#region Constructor
 
 	/// <summary>
-	/// Initializes a conversation node 
+	/// Initializes a conversation node with the parsed data 
 	/// </summary>
-	/// <param name="parsedJSONData">Parsed JSON data.</param>
-	public ConversationNode(Dictionary<string, object> parsedJSONData) {
-		this.Title = parsedJSONData.GetValueForKey<string>(YARN_TITLE_TAG);
-		this.ParseTags(parsedJSONData.GetValueForKey<string>(YARN_TAGS_TAG));
-		this.ParseScript(parsedJSONData.GetValueForKey<string>(YARN_BODY_TAG));
+	/// <param name="parsedData">Parsed data.</param>
+	public ConversationNode(Dictionary<string, object> parsedData) {
+		this.Title = (parsedData.ContainsKey(YARN_TITLE_TAG)) ? parsedData[YARN_TITLE_TAG] as string : string.Empty;
+
+		string tagsBodyString = (parsedData.ContainsKey(YARN_TAGS_TAG)) ? parsedData[YARN_TAGS_TAG] as string : string.Empty;
+		this.ParseTags(tagsBodyString);
+
+		string scriptBodyString = (parsedData.ContainsKey(YARN_BODY_TAG)) ? parsedData[YARN_BODY_TAG] as string : string.Empty;
+		this.ParseScript(scriptBodyString);
 
 		// Set this conversation to it's default state.
 		this.ResetConversation();
