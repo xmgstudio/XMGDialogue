@@ -4,7 +4,7 @@ Dialogue system developed by XMG Studio.
 
 If you use this drop us a line or make a pull request adding your game to the list at the bottom of this readme.
 
-There is a tutorial for setting up and writing for this system [here](http://xmgstudio.tumblr.com/)
+There is a tutorial for setting up and writing for this system [here](http://xmgstudio.tumblr.com/post/139791670481/xmgdialoguetutorial)
 
 ##Quickstart
 
@@ -98,8 +98,5 @@ This will, when the correct method in the AbstractDialogueContext is called, cal
 
 ##Games using this Dialogue System
 
-### Gastrobots by XMG Studio
-[![Gastrobots](http://i.imgur.com/90TM2r7.png)](gastrobots.xmg.com)
-
-### Project Giants by XMG Studio
-[![Giants](https://i.imgur.com/9BegGQL.png)](giants.xmg.com)
+### XMG Studio
+[![Gastrobots](http://i.imgur.com/90TM2r7.png)](gastrobots.xmg.com) [![Giants](https://i.imgur.com/9BegGQL.png)](giants.xmg.com)
