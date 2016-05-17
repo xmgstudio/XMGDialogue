@@ -152,7 +152,11 @@ public class DialogueLine {
 		// Start with getting the speaker.
 		if (line.Contains(LINE_NAME_SPLIT.ToString())) {
 			this.SpeakerID = line.Substring(0, line.IndexOf(LINE_NAME_SPLIT)).Trim();
+
+// Disable obsolete warnings for obsoleted memebers of this class
+#pragma warning disable 612, 618
 			this.SpeakerName = this.SpeakerID.Replace("_", " ");
+#pragma warning restore 612, 618
 			this.Line = line.Substring(line.IndexOf(LINE_NAME_SPLIT) + 1).Trim();
 		} else {
 			// If there wasn't a name the whole thing is a line with no character attached.
@@ -253,7 +257,11 @@ public class DialogueLine {
 	private void ParseMetaData(string metadata) {
 		Match emotes = Regex.Match(metadata, string.Format(META_INFO_REGEX_FORMATTER, EMOTE_TAG));
 		if (emotes.Success) {
+// Disable obsolete warnings for obsoleted memebers of this class
+#pragma warning disable 612, 618			
 			this.Emotion = emotes.Value;
+#pragma warning restore 612, 618
+
 		}
 		
 		Match actions = Regex.Match(metadata, string.Format(META_INFO_REGEX_FORMATTER, ACTION_TAG));
@@ -284,8 +292,11 @@ public class DialogueLine {
 	/// </summary>
 	/// <returns>A <see cref="System.String"/> that represents the current <see cref="DialogueLine"/>.</returns>
 	public override string ToString() {
+// Disable obsolete warnings for obsoleted memebers of this class
+#pragma warning disable 612, 618
 		object[] toStringParams = new object[] { this.SpeakerName, this.Line, this.Emotion, this.HasChoices, this.lineActions.Count};
 		return string.Format ("[DialogueLine: SpeakerName={0}, Line={1}, Emotion={2}, HasChoices={3}, HasActions={4}]", toStringParams);
+#pragma warning restore 612, 618
 	}
 	
 	#endregion
