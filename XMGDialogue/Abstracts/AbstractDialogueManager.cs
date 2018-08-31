@@ -14,12 +14,8 @@ namespace XMGDialogue {
 		/// <summary>
 		/// A list of all the dialogue contexts that this dialogue manager supports.
 		/// </summary>
+		[SerializeField]
 		protected List<AbstractDialogueContext> dialogueContexts = null;
-		
-		/// <summary>
-		/// The conversation file that is currently loaded.
-		/// </summary>
-		protected List<object> conversationFile = null;
 
 		#endregion
 
@@ -31,7 +27,7 @@ namespace XMGDialogue {
 		public abstract void Initialize();
 
 		/// <summary>
-		/// Find the conversation with the correct name and create a Dialogue Controller to manage that conversation.
+		/// Find the conversation with the correct name and create a Dialogue Controller to manage that conversation in the specified abstract dialogue context.
 		/// </summary>
 		/// <param name="serializedConversation">The data of the conversation to start.</param>
 		/// <param name="context">The dialogue context to attatch to the controller.</param>

@@ -64,7 +64,7 @@ namespace XMGDialogue {
 		/// <summary>
 		/// Gets the title/ID of this context.
 		/// </summary>
-		public abstract string Title {
+		public abstract string ContextID {
 			get;
 		}
 

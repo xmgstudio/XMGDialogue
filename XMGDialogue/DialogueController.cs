@@ -41,9 +41,9 @@ namespace XMGDialogue {
 		#region Data
 
 		/// <summary>
-		/// The conversation nodes that make up the dialogue tree.
+		/// Conversation nodes that are a part of the loaded dialogue.
 		/// </summary>
-		protected List<ConversationNode> conversationNodes = null;
+		protected Dictionary<string, ConversationNode> conversationNodeMap = null;
 
 		/// <summary>
 		/// The dialogue context that this controller is using for display.
@@ -65,11 +65,11 @@ namespace XMGDialogue {
 		#region Constructor
 
 		/// <summary>
-		/// Sets up this dialogue controller with a given dialogue tree.
+		/// Constrctor that will first parse a serialized Yarn file and then load the file.
 		/// </summary>
-		/// <param name="dialogueTree">Dialogue tree to load.</param>
-		/// <param name="context">The dialogue context to display to.</param>
-		public DialogueController(List<object> dialogueTree, AbstractDialogueContext context) {
+		/// <param name="serializedYarnFile">Serialized file to parse into a Yarn dialogue tree.</param>
+		/// <param name="context">The dialogue context to display the Yarn dialogue in.</param>
+		public DialogueController(string serializedYarnFile, AbstractDialogueContext context) {
 			// Set context
 			this.context = context;
 			this.context.OnContinuePressed += this.AdvanceLine;
@@ -79,8 +79,7 @@ namespace XMGDialogue {
 			// Initialize action list.
 			this.eventActionList = new Dictionary<string, DialogueActionDelegate>();
 
-			// Load the conversation into this DialogueController.
-			this.LoadConversation(dialogueTree);
+			this.LoadConversation(serializedYarnFile);
 		}
 
 		#endregion
@@ -181,28 +180,23 @@ namespace XMGDialogue {
 		public void LoadConversation(string serializedYarnFile) {
 			List<object> serializedConversationNodes = MiniJSON.Json.Deserialize(serializedYarnFile) as List<object>;
 			Debug.Assert(serializedConversationNodes != null, "Must have at least one conversation node in the provided data.");
-			this.LoadConversation(serializedConversationNodes);
-		}
-
-		/// <summary>
-		/// Loads the conversation specifed in the dialogue tree into this controller.
-		/// </summary>
-		/// <param name="dialogueTree">Dialogue tree to load.</param>
-		public void LoadConversation(List<object> dialogueTree) {
+			
 			// Add a conversation node for each part of the dialogue tree.
-			this.conversationNodes = new List<ConversationNode>(dialogueTree.Count);
-			for (int i = 0; i < dialogueTree.Count; i++) {
-				conversationNodes.Add(new ConversationNode(dialogueTree[i] as Dictionary<string, object>));
+			this.conversationNodeMap = new Dictionary<string, ConversationNode>(serializedConversationNodes.Count);
+
+			for (int i = 0; i < serializedConversationNodes.Count; i++) {
+				ConversationNode newNode = new ConversationNode(serializedConversationNodes[i] as Dictionary<string, object>);
+				this.conversationNodeMap[newNode.Title] = newNode;
 			}
 		}
 
 		/// <summary>
-		/// Loads the conversation specified in the dialouge tree and starts a given conversation.
+		/// Loads the conversation specified in the dialouge tree and automatically starts a given conversation.
 		/// </summary>
 		/// <param name="dialogueTree">Dialogue tree.</param>
 		/// <param name="conversationNode">Conversation node.</param>
-		public void LoadConversation(List<object> dialogueTree, string conversationNode) {
-			this.LoadConversation(dialogueTree);
+		public void LoadConversation(string serializedYarnFile, string conversationNode) {
+			this.LoadConversation(serializedYarnFile);
 			this.StartConversationNode(conversationNode);
 		}
 
@@ -211,20 +205,17 @@ namespace XMGDialogue {
 		/// </summary>
 		/// <param name="conversation">Unparsed string that represents the conversation.</param>
 		public void StartConversationNode(string conversationNode) {
+			if (this.conversationNodeMap.ContainsKey(conversationNode)) {
 			// Grab the start node, set it's point to it's first line and then run though.
-			this.currentNode = this.conversationNodes.Find(delegate(ConversationNode obj) {
-				return obj.Title.ToLower() == conversationNode.ToLower();
-			});
-
-			if (this.currentNode == null) {
-				Debug.LogError("Can't find node " + conversationNode);
-				return;
-			}
+			this.currentNode = this.conversationNodeMap[conversationNode];
 
 			this.currentNode.ResetConversation();
 
 			this.context.NewConversationNode(this.currentNode);
 			this.context.DisplayDialogue(this.currentNode.GetCurrentLine());
+			} else {
+				Debug.LogError("Can't find node " + conversationNode);
+			}
 		}
 
 		/// <summary>
@@ -253,17 +244,14 @@ namespace XMGDialogue {
 				return;
 			}
 
-			ConversationNode newNode = this.conversationNodes.Find(delegate(ConversationNode obj) {
-				return obj.Title == newNodeName;
-			});
-
-			if (newNode == null) {
+			ConversationNode newNode = null;
+			if (!this.conversationNodeMap.TryGetValue(key, out newNode)) {
 				Debug.LogError(string.Format("{0} is not a conversation node name nor a special string.", newNodeName));
 				return;
+			} else {
+				this.currentNode = newNode;
+				this.context.DisplayDialogue(this.currentNode.GetCurrentLine());
 			}
-
-			this.currentNode = newNode;
-			this.context.DisplayDialogue(this.currentNode.GetCurrentLine());
 		}
 
 		#endregion
@@ -275,12 +263,13 @@ namespace XMGDialogue {
 		/// </summary>
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="DialogueController"/>.</returns>
 		public override string ToString () {
-			string nodeNames = "";
-			foreach (ConversationNode node in this.conversationNodes) {
-				nodeNames = string.Format("{0} {1},", nodeNames, node.Title); 
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			sb.AppendLine("[DialogueController] - Nodes:");
+			foreach (string nodeID in this.conversationNodeMap.Keys) {
+				sb.AppendLine(nodeID); 
 			}
 
-			return string.Format ("[DialogueController - Nodes: {0}", nodeNames);
+			return sb.ToString();
 		}
 
 		#endregion
