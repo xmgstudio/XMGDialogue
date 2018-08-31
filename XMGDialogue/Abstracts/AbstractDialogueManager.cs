@@ -2,38 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 
-/// <summary>
-/// Abstract dialogue manager 
-/// </summary>
-public abstract class AbstractDialogueManager : MonoBehaviour {
-
-	#region Data
+namespace XMGDialogue {
 
 	/// <summary>
-	/// A list of all the dialogue contexts that this dialogue manager supports.
+	/// Abstract dialogue manager 
 	/// </summary>
-	protected List<AbstractDialogueContext> dialogueContexts = null;
-	
-	/// <summary>
-	/// The conversation file that is currently loaded.
-	/// </summary>
-	protected List<object> conversationFile = null;
+	public abstract class AbstractDialogueManager : MonoBehaviour {
 
-	#endregion
+		#region Data
 
-	#region Dialogue manager
+		/// <summary>
+		/// A list of all the dialogue contexts that this dialogue manager supports.
+		/// </summary>
+		protected List<AbstractDialogueContext> dialogueContexts = null;
+		
+		/// <summary>
+		/// The conversation file that is currently loaded.
+		/// </summary>
+		protected List<object> conversationFile = null;
 
-	/// <summary>
-	/// Initialize this dialogue manager.
-	/// </summary>
-	public abstract void Initialize();
+		#endregion
 
-	/// <summary>
-	/// Find the conversation with the correct name and create a Dialogue Controller to manage that conversation.
-	/// </summary>
-	/// <param name="serializedConversation">The data of the conversation to start.</param>
-	/// <param name="context">The dialogue context to attatch to the controller.</param>
-	public abstract DialogueController StartConversation(TextAsset serializedConversation, AbstractDialogueContext context);
+		#region Dialogue manager
 
-	#endregion
+		/// <summary>
+		/// Initialize this dialogue manager.
+		/// </summary>
+		public abstract void Initialize();
+
+		/// <summary>
+		/// Find the conversation with the correct name and create a Dialogue Controller to manage that conversation.
+		/// </summary>
+		/// <param name="serializedConversation">The data of the conversation to start.</param>
+		/// <param name="context">The dialogue context to attatch to the controller.</param>
+		public abstract DialogueController StartConversation(TextAsset serializedConversation, AbstractDialogueContext context);
+
+		#endregion
+	}
 }
