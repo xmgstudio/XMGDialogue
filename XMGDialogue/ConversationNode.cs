@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namsepace XMGDialogue {
+namespace XMGDialogue {
 
 	/// <summary>
 	/// This class represents a single conversation node, corresponding to a single block of data in Yarn.

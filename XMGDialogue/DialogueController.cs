@@ -180,7 +180,7 @@ namespace XMGDialogue {
 		/// <param name="serializedYarnFile">A serialized yarn file.</param>
 		public void LoadConversation(string serializedYarnFile) {
 			List<object> serializedConversationNodes = MiniJSON.Json.Deserialize(serializedYarnFile) as List<object>;
-			Debug.Assert(serializedConversationNodes != null, "Must have at least one conversation node in the provided data.")
+			Debug.Assert(serializedConversationNodes != null, "Must have at least one conversation node in the provided data.");
 			this.LoadConversation(serializedConversationNodes);
 		}
 
