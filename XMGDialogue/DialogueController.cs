@@ -175,6 +175,16 @@ namespace XMGDialogue {
 		#region Logic
 
 		/// <summary>
+		/// Loads a conversation string into this dialogue controller.
+		/// </summary>
+		/// <param name="serializedYarnFile">A serialized yarn file.</param>
+		public void LoadConversation(string serializedYarnFile) {
+			List<object> serializedConversationNodes = MiniJSON.Json.Deserialize(serializedYarnFile) as List<object>;
+			Debug.Assert(serializedConversationNodes != null, "Must have at least one conversation node in the provided data.")
+			this.LoadConversation(serializedConversationNodes);
+		}
+
+		/// <summary>
 		/// Loads the conversation specifed in the dialogue tree into this controller.
 		/// </summary>
 		/// <param name="dialogueTree">Dialogue tree to load.</param>
