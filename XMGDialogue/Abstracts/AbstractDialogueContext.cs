@@ -32,10 +32,18 @@ namespace XMGDialogue {
 		public delegate void OptionSelectedDelegate(string optionSelected);
 
 		/// <summary>
-		/// This is the action that 
+		/// Delegate for dialogue actions.
 		/// </summary>
+		/// <param name="actionKey"></param>
 		/// <param name="actionParams">String encoding the params for the action.</param>
 		public delegate void DialogueActionDelegate(string actionKey, string actionParams);
+
+		/// <summary>
+		/// Delegate for 
+		/// </summary>
+		/// <param name="optionKey"></param>
+		/// <param name="destinationNodeID"></param>
+		public delegate void DialogueOptionDelegate(string optionKey, string destinationNodeID);
 		
 		/// <summary>
 		/// Event that is thrown when the continue button is pressed.
@@ -45,7 +53,7 @@ namespace XMGDialogue {
 		/// <summary>
 		/// Occurs when an option is selected through this context.
 		/// </summary>
-		public event DialogueOption.DialogueButtonDelegate OnOptionSelected = null;
+		public event DialogueOptionDelegate OnOptionSelected = null;
 
 		/// <summary>
 		/// Occurs when a dialouge action is encountered by the line reader.
