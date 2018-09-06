@@ -50,6 +50,12 @@ namespace XMGDialogue {
 		/// </summary>
 		protected AbstractDialogueContext context = null;
 
+		public AbstractDialogueContext Context {
+			get {
+				return this.context;
+			}
+		}
+
 		/// <summary>
 		/// The current node that is being processed.
 		/// </summary>
@@ -235,7 +241,7 @@ namespace XMGDialogue {
 		/// Handles an option being selected.
 		/// </summary>
 		/// <param name="key">Key for the action.</param>
-		/// <param name="action">The name of the new node.</param>
+		/// <param name="newNodeName">The new node to look up.</param>
 		private void HandleOptionSelected(string key, string newNodeName) {
 			if (newNodeName == END_CONVO_STRING) {
 				if (this.DialogueOver != null) {
@@ -245,7 +251,7 @@ namespace XMGDialogue {
 			}
 
 			ConversationNode newNode = null;
-			if (!this.conversationNodeMap.TryGetValue(key, out newNode)) {
+			if (!this.conversationNodeMap.TryGetValue(newNodeName, out newNode)) {
 				Debug.LogError(string.Format("{0} is not a conversation node name nor a special string.", newNodeName));
 				return;
 			} else {

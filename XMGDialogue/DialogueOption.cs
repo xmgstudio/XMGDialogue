@@ -29,6 +29,9 @@ namespace XMGDialogue {
 
 		#region Button Data
 
+		/// <summary>
+		/// The selector that is being used for this dialogue option.
+		/// </summary>
 		[SerializeField]
 		protected Button optionSelector = null;
 
@@ -36,7 +39,7 @@ namespace XMGDialogue {
 		/// The text displayed on the button.
 		/// </summary>
 		[SerializeField]
-		protected Text buttonText = null;
+		protected TMPro.TextMeshProUGUI buttonText = null;
 
 		protected string optionNode = string.Empty;
 		/// <summary>
@@ -85,6 +88,20 @@ namespace XMGDialogue {
 			if (this.buttonText == null) {
 				Debug.LogError("Button text is null on " + this.name);
 			}
+		}
+
+		/// <summary>
+		/// When this option is set up automatically attach the button.
+		/// </summary>
+		protected virtual void Start() {
+			this.optionSelector.onClick.AddListener(this.UIButtonPressed);
+		}
+
+		/// <summary>
+		/// Remove button event when this button is destroyed.
+		/// </summary>
+		protected virtual void OnDestroy() {
+			this.optionSelector.onClick.RemoveListener(this.UIButtonPressed);
 		}
 
 		#endregion
