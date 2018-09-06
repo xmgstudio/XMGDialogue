@@ -134,7 +134,21 @@ namespace XMGDialogue {
 				}
 			
 				this.dialogueCamera.gameObject.SetActive(false);
-				this.gameObject.SetActive(false);
+			}));
+		}
+
+		/// <summary>
+		/// Opens this dialogue context.
+		/// </summary>
+		/// <param name="contextOpen"></param>
+		public virtual void OpenContext(Action contextOpen = null) {
+			this.gameObject.SetActive(true);
+			this.StartCoroutine(this.OpenContextCoroutine(delegate() {
+				if (contextOpen != null) {
+					contextOpen();
+				}
+			
+				this.dialogueCamera.gameObject.SetActive(true);
 			}));
 		}
 
@@ -143,6 +157,13 @@ namespace XMGDialogue {
 		/// </summary>
 		/// <param name="contextClosed">Callback for when this context is finished closing up.</param>
 		protected abstract IEnumerator CloseContextCoroutine(Action contextClosed = null);
+
+		/// <summary>
+		/// Coroutine that handles opening the context. 
+		/// Should set up the dialog and enable it to start.
+		/// </summary>
+		/// <param name="contextOpen">Callback for when the context has been opened successfully.</param>
+		protected abstract IEnumerator OpenContextCoroutine(Action contextOpen = null);
 
 		#endregion
 

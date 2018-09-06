@@ -45,11 +45,10 @@ namespace XMGDialogue {
 		/// </summary>
 		protected Dictionary<string, ConversationNode> conversationNodeMap = null;
 
+		protected AbstractDialogueContext context = null;
 		/// <summary>
 		/// The dialogue context that this controller is using for display.
 		/// </summary>
-		protected AbstractDialogueContext context = null;
-
 		public AbstractDialogueContext Context {
 			get {
 				return this.context;
