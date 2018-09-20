@@ -39,10 +39,13 @@ namespace XMGDialogue {
 
 		#region Data
 
+		protected Dictionary<string, ConversationNode> conversationNodeMap = null;
 		/// <summary>
 		/// Conversation nodes that are a part of the loaded dialogue.
 		/// </summary>
-		protected Dictionary<string, ConversationNode> conversationNodeMap = null;
+		public Dictionary<string, ConversationNode> ConversationNodeMap {
+			get { return this.conversationNodeMap; }
+		}
 
 		protected AbstractDialogueContext context = null;
 		/// <summary>
@@ -63,7 +66,7 @@ namespace XMGDialogue {
 				return this.currentNode;
 			}
 		}
-		
+
 		/// <summary>
 		/// The event action list.
 		/// </summary>
@@ -121,29 +124,18 @@ namespace XMGDialogue {
 		#endregion
 
 		#region Dialogue Actions
-
-		/// <summary>
-		/// Registers multiple actions to this dialogue controller.
-		/// </summary>
-		/// <param name="actions">A dictionary of actionKey & actionParam strings.</param>
-		private void RegisterDialogueActions(Dictionary<string, string> actions) {
-			foreach (KeyValuePair<string, string> action in actions) {
-				if (this.eventActionList.ContainsKey(action.Key)) {
-					continue;
-				}
-
-				DialogueActionDelegate newDelegate = DialogueManager.Instance.ParseActionKey(action.Key);
-				this.RegisterDialogueAction(actionTag: action.Key, actionDelegate: newDelegate);
-			}
-		}
 		
 		/// <summary>
 		/// Registers an action to this dialogue controller that will respond to a given tag.
 		/// </summary>
-		/// <param name="actionTag">Action tag.</param>
-		/// <param name="actionDelegate">Action delegate.</param>
-		private void RegisterDialogueAction(string actionTag, DialogueActionDelegate actionDelegate) {
-			this.eventActionList[actionTag] += actionDelegate;
+		/// <param name="actionTag">The tag the delegate will respond to.</param>
+		/// <param name="actionDelegate">The delegate to add to the registered actions.</param>
+		public void RegisterDialogueAction(string actionTag, DialogueActionDelegate actionDelegate) {
+			if (this.HasActionKey(actionTag)) {
+				this.eventActionList[actionTag] = actionDelegate;
+			} else {
+				this.eventActionList[actionTag] += actionDelegate;
+			}
 		}
 
 		/// <summary>
@@ -152,7 +144,7 @@ namespace XMGDialogue {
 		/// <param name="actionTagToRemove">Action tag to remove.</param>
 		/// <param name="delegateToRemove">Delegate to remove.</param>
 		public void RemoveDialogueAction(string actionTagToRemove, DialogueActionDelegate delegateToRemove) {
-			if (this.eventActionList.ContainsKey(actionTagToRemove)) {
+			if (this.HasActionKey(actionTagToRemove)) {
 				this.eventActionList[actionTagToRemove] -= delegateToRemove;
 			}
 		}
@@ -163,7 +155,7 @@ namespace XMGDialogue {
 		/// <param name="actionTag">Action tag.</param>
 		/// <param name="delegateParams">Action delegate parameters.</param>
 		private void HandleDialogueActionEvent(string actionTag, string delegateParams) {
-			if (this.eventActionList.ContainsKey(actionTag)) {
+			if (this.HasActionKey(actionTag)) {
 				this.eventActionList[actionTag](delegateParams);
 			}
 		}
@@ -208,8 +200,6 @@ namespace XMGDialogue {
 			for (int i = 0; i < serializedConversationNodes.Count; i++) {
 				ConversationNode newNode = new ConversationNode(serializedConversationNodes[i] as Dictionary<string, object>);
 				this.conversationNodeMap[newNode.Title] = newNode;
-				// Registers all the dialogue actions in the node.
-				this.RegisterDialogueActions(this.ConversationActions(newNode.Dialogue));
 			}
 		}
 
@@ -287,6 +277,15 @@ namespace XMGDialogue {
 			}
 		}
 
+		/// <summary>
+		/// Whether or not the action key is registered or not.
+		/// </summary>
+		/// <param name="actionKey">The Key we are checking.</param>
+		/// <returns>True if the key has already been registered; false if the key has not been registered.</returns>
+		public bool HasActionKey(string actionKey) {
+			return this.eventActionList.ContainsKey(actionKey);
+		}
+
 		#endregion
 
 		#region Object
@@ -322,7 +321,7 @@ namespace XMGDialogue {
 		/// Gets a dictionary of actionKeys and actionParameters from a list of dialogue lines.
 		/// </summary>
 		/// <returns>A Dictionary of actions with actionKey and actionParam.</returns>
-		private Dictionary<string, string> ConversationActions(List<DialogueLine> dialogue) {
+		public Dictionary<string, string> ConversationActions(List<DialogueLine> dialogue) {
 			Dictionary<string, string> actions = new Dictionary<string, string>();
 			// Early exit if there is no dialogue to check.
 			if (dialogue.Count <= 0) {

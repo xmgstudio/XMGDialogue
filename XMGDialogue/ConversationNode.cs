@@ -187,7 +187,7 @@ namespace XMGDialogue {
 		/// <param name="value">The specific line to check.</param>
 		/// <returns><c>true</c> if this instance has the specific line; otherwise, <c>false</c>.</returns>
 		public bool HasLine(int value) {
-			return value <= (this.dialogue.Count - 1);
+			return value < this.dialogue.Count;
 		}
 
 		#endregion
