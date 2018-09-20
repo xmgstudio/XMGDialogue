@@ -74,10 +74,15 @@ namespace XMGDialogue {
 		/// </summary>
 		private Dictionary<string, string[]> tagMap = new Dictionary<string, string[]>();
 
+		private List<DialogueLine> dialogue = null;
 		/// <summary>
 		/// List of the dialogue lines.
 		/// </summary>
-		private List<DialogueLine> dialogue = null;
+		public List<DialogueLine> Dialogue {
+			get {
+				return this.dialogue;
+			}
+		}
 
 		/// <summary>
 		/// The line of dialogue that this conversation node is pointing to.
@@ -152,6 +157,13 @@ namespace XMGDialogue {
 				return null;
 			}
 		}
+		/// <summary>
+		/// Sets the current line pointer to a specific value.
+		/// </summary>
+		/// <param name="lineValue">The new value for the dialogue pointer.</param>
+		public void SetLine(int lineValue) {
+			this.dialoguePointer = lineValue;
+		}
 
 		/// <summary>
 		/// Gets the current line in this conversation line without advancing the conversation.
@@ -167,6 +179,15 @@ namespace XMGDialogue {
 		/// <returns><c>true</c> if this instance has a next line; otherwise, <c>false</c>.</returns>
 		public bool HasNextLine() {
 			return this.dialoguePointer < (this.dialogue.Count - 1);
+		}
+
+		/// <summary>
+		/// Determines whether this instance has a specific line or not.
+		/// </summary>
+		/// <param name="value">The specific line to check.</param>
+		/// <returns><c>true</c> if this instance has the specific line; otherwise, <c>false</c>.</returns>
+		public bool HasLine(int value) {
+			return value < this.dialogue.Count;
 		}
 
 		#endregion
