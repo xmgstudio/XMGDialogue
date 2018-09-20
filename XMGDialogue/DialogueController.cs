@@ -2,7 +2,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace XMGDialogue {
 	/// <summary>
@@ -55,11 +54,16 @@ namespace XMGDialogue {
 			}
 		}
 
+		protected ConversationNode currentNode = null;
 		/// <summary>
 		/// The current node that is being processed.
 		/// </summary>
-		protected ConversationNode currentNode = null;
-
+		public ConversationNode CurrentNode {
+			get {
+				return this.currentNode;
+			}
+		}
+		
 		/// <summary>
 		/// The event action list.
 		/// </summary>
@@ -70,7 +74,7 @@ namespace XMGDialogue {
 		#region Constructor
 
 		/// <summary>
-		/// Constrctor that will first parse a serialized Yarn file and then load the file.
+		/// Constructor that will first parse a serialized Yarn file and then load the file.
 		/// </summary>
 		/// <param name="serializedYarnFile">Serialized file to parse into a Yarn dialogue tree.</param>
 		/// <param name="context">The dialogue context to display the Yarn dialogue in.</param>
@@ -119,16 +123,27 @@ namespace XMGDialogue {
 		#region Dialogue Actions
 
 		/// <summary>
+		/// Registers multiple actions to this dialogue controller.
+		/// </summary>
+		/// <param name="actions">A dictionary of actionKey & actionParam strings.</param>
+		private void RegisterDialogueActions(Dictionary<string, string> actions) {
+			foreach (KeyValuePair<string, string> action in actions) {
+				if (this.eventActionList.ContainsKey(action.Key)) {
+					continue;
+				}
+
+				DialogueActionDelegate newDelegate = DialogueManager.Instance.ParseActionKey(action.Key);
+				this.RegisterDialogueAction(actionTag: action.Key, actionDelegate: newDelegate);
+			}
+		}
+		
+		/// <summary>
 		/// Registers an action to this dialogue controller that will respond to a given tag.
 		/// </summary>
 		/// <param name="actionTag">Action tag.</param>
 		/// <param name="actionDelegate">Action delegate.</param>
-		public void RegisterDialogueAction(string actionTag, DialogueActionDelegate actionDelegate) {
-			if (!this.eventActionList.ContainsKey(actionTag)) {
-				this.eventActionList[actionTag] = actionDelegate;
-			} else {
-				this.eventActionList[actionTag] += actionDelegate;
-			}
+		private void RegisterDialogueAction(string actionTag, DialogueActionDelegate actionDelegate) {
+			this.eventActionList[actionTag] += actionDelegate;
 		}
 
 		/// <summary>
@@ -189,16 +204,19 @@ namespace XMGDialogue {
 			// Add a conversation node for each part of the dialogue tree.
 			this.conversationNodeMap = new Dictionary<string, ConversationNode>(serializedConversationNodes.Count);
 
+			// Creates a new Conversation Node for every node found in the deserialized file.
 			for (int i = 0; i < serializedConversationNodes.Count; i++) {
 				ConversationNode newNode = new ConversationNode(serializedConversationNodes[i] as Dictionary<string, object>);
 				this.conversationNodeMap[newNode.Title] = newNode;
+				// Registers all the dialogue actions in the node.
+				this.RegisterDialogueActions(this.ConversationActions(newNode.Dialogue));
 			}
 		}
 
 		/// <summary>
-		/// Loads the conversation specified in the dialouge tree and automatically starts a given conversation.
+		/// Loads the conversation specified in the dialogue tree and automatically starts a given conversation.
 		/// </summary>
-		/// <param name="dialogueTree">Dialogue tree.</param>
+		/// <param name="serializedYarnFile">Dialogue tree.</param>
 		/// <param name="conversationNode">Conversation node.</param>
 		public void LoadConversation(string serializedYarnFile, string conversationNode) {
 			this.LoadConversation(serializedYarnFile);
@@ -208,16 +226,16 @@ namespace XMGDialogue {
 		/// <summary>
 		/// This grabs the conversation node by title or returns null if that node does not exist.
 		/// </summary>
-		/// <param name="conversation">Unparsed string that represents the conversation.</param>
+		/// <param name="conversationNode">Unparsed string that represents the conversation.</param>
 		public void StartConversationNode(string conversationNode) {
 			if (this.conversationNodeMap.ContainsKey(conversationNode)) {
-			// Grab the start node, set it's point to it's first line and then run though.
-			this.currentNode = this.conversationNodeMap[conversationNode];
-
-			this.currentNode.ResetConversation();
-
-			this.context.NewConversationNode(this.currentNode);
-			this.context.DisplayDialogue(this.currentNode.GetCurrentLine());
+				// Grab the start node, set it's point to it's first line and then run though.
+				this.currentNode = this.conversationNodeMap[conversationNode];
+	
+				this.currentNode.ResetConversation();
+	
+				this.context.NewConversationNode(this.currentNode);
+				this.context.DisplayDialogue(this.currentNode.GetCurrentLine());
 			} else {
 				Debug.LogError("Can't find node " + conversationNode);
 			}
@@ -233,6 +251,16 @@ namespace XMGDialogue {
 				if (this.DialogueOver != null) {
 					this.DialogueOver();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Sets the current line to the specific value.
+		/// </summary>
+		/// <param name="lineValue">What value to set the current line to.</param>
+		public void SetLine(int lineValue) {
+			if (this.currentNode.HasLine(lineValue)) {
+				this.currentNode.SetLine(lineValue);
 			}
 		}
 
@@ -275,6 +303,46 @@ namespace XMGDialogue {
 			}
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Returns all of the actions in this controller as a string.
+		/// </summary>
+		/// <returns>A string listing all the actions registered to this controller.</returns>
+		public string ActionsToString() {
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			sb.AppendLine("[DialogueController] - Actions:");
+			foreach (string key in this.eventActionList.Keys) {
+				sb.AppendLine(key);
+			}
+			return sb.ToString();
+		}
+		
+		/// <summary>
+		/// Gets a dictionary of actionKeys and actionParameters from a list of dialogue lines.
+		/// </summary>
+		/// <returns>A Dictionary of actions with actionKey and actionParam.</returns>
+		private Dictionary<string, string> ConversationActions(List<DialogueLine> dialogue) {
+			Dictionary<string, string> actions = new Dictionary<string, string>();
+			// Early exit if there is no dialogue to check.
+			if (dialogue.Count <= 0) {
+				return actions;
+			}
+			
+			// Loop through all of the dialogue.
+			for (int i = 0; i < dialogue.Count; i++) {
+				// If the dialogue has no actions, we skip it.
+				if (dialogue[i].HasActions == false) {
+					continue;
+				}
+				
+				// We add each action we find in the dialogue line to the return dictionary.
+				foreach (KeyValuePair<string, string> lineAction in dialogue[i].lineActions) {
+					actions.Add(lineAction.Key, lineAction.Value);
+				}
+			}
+
+			return actions;
 		}
 
 		#endregion
