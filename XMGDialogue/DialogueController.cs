@@ -134,7 +134,7 @@ namespace XMGDialogue {
 			if (this.HasActionKey(actionTag)) {
 				this.eventActionList[actionTag] = actionDelegate;
 			} else {
-				this.eventActionList[actionTag] += actionDelegate;
+				this.eventActionList.Add(actionTag, actionDelegate);
 			}
 		}
 
